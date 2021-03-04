@@ -1,6 +1,7 @@
 #include <chrono>
 #include <thread>
 #include "./utils/dqueue.h"
+#include "./utils/utimer.h"
 #define EOS -1
 
 using namespace std::chrono_literals;
@@ -15,13 +16,16 @@ int main(int argc, char *argv[]){
 
     auto inc = [](int x) { return(x+1);};
 
-    std::thread s1(source, std::ref(source2one), 10, 1000ms);
-    std::thread s2(genericstage, std::ref(source2one), std::ref(one2drain), 1000ms);
-    std::thread s3(drain, std::ref(one2drain), 1000ms);
+    {
+      utimer t("Test");
+      std::thread s1(source, std::ref(source2one), 10, 1000ms);
+      std::thread s2(genericstage, std::ref(source2one), std::ref(one2drain), 1000ms);
+      std::thread s3(drain, std::ref(one2drain), 1000ms);
 
-    s1.join();
-    s2.join();
-    s3.join();
+      s1.join();
+      s2.join();
+      s3.join();
+    }
 }
 
 
