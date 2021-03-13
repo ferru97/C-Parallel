@@ -41,7 +41,7 @@ public:
   
   T pop() {
     std::unique_lock<std::mutex> lock(d_mutex);
-    d_condition.wait(lock, [=](){ return (!d_queue.empty() });  // wait if the queue is currently empty
+    d_condition.wait(lock, [=](){ return !d_queue.empty(); });  // wait if the queue is currently empty
     T rc(std::move(this->d_queue.back()));       // used to get the actual message rather than a copy
     d_queue.pop_back();                   // remove the item just read from the back end of the queue
     return rc;

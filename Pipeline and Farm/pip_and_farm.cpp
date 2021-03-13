@@ -1,5 +1,6 @@
 #include <chrono>
 #include <thread>
+#include <sstream>
 #include "../utils/utimer.h"
 #include "../utils/dqueue_multi.h"
 
@@ -11,11 +12,12 @@ void fun1(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wai
 void fun2(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wait);
 void drain(myqueue<int> &in_q, std::chrono::milliseconds wait);
 
-int main(int argc, char *argv[]){
+int main(int argc, char **argv){
     if(argc<2){
         std::cout << "Invlid arguments";
         return 0;
     }
+    std::cout << std::stoi(argv[1]) << std::stoi(argv[2]) << std::endl;
     int farm_workers = *argv[0];
     int works = *argv[1];
     std::cout << "Using" << farm_workers*2+2 << "threada" << std::endl;
@@ -43,7 +45,7 @@ int main(int argc, char *argv[]){
         for(std::vector<std::thread>::iterator it = threads.begin(); it != threads.end(); ++it) 
             it->join();
     }
-
+    
     return 0;
 }
 
