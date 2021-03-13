@@ -32,7 +32,6 @@ public:
       if(value != EOS_id)
         d_queue.push_front(value);
       else{
-        this->out_threads_num += 1;
         for(int i=0; i<this->out_threads_num; i++)
             d_queue.push_front(EOS_id);
       }
