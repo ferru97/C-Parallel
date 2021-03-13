@@ -57,7 +57,7 @@ void source(myqueue<int> &q, int n_works, std::chrono::milliseconds wait){
     }
 
     q.push(EOS);
-    std::cout << "Emitter send EOS" << std::endl;
+    std::cout << "Source send EOS" << std::endl;
 }
 
 void fun1(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wait){
