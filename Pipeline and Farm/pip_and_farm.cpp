@@ -11,10 +11,10 @@ void fun1(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wai
 void fun2(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wait);
 void drain(myqueue<int> &in_q, std::chrono::milliseconds wait);
 
-int main(int argc, int *argv[]){
+int main(int argc, char *argv[]){
     if(argc<2){
         std::cout << "Invlid arguments";
-        return;
+        return 0;
     }
     int farm_workers = *argv[0];
     int works = *argv[1];
@@ -22,7 +22,7 @@ int main(int argc, int *argv[]){
 
     {
         utimer t("Pipeline and farm");
-        
+
         myqueue<int> emitter_out(farm_workers, EOS);
         myqueue<int> drain_inq(1, EOS);
 
@@ -31,7 +31,7 @@ int main(int argc, int *argv[]){
 
 
         std::thread source_t(source, std::ref(emitter_out), works, 10ms);
-        std::thread drain_t(drain, std::ref(drain_inq), works, 10ms);
+        std::thread drain_t(drain, std::ref(drain_inq), 10ms);
         for(int i=0; i<farm_workers; i=i+2){
             myqueue<int> tamp_queue(1, EOS);
             threads.emplace_back( std::thread {fun1, std::ref(emitter_out), std::ref(tamp_queue), 30ms});
@@ -44,7 +44,7 @@ int main(int argc, int *argv[]){
             it->join();
     }
 
-
+    return 0;
 }
 
 void source(myqueue<int> &q, int n_works, std::chrono::milliseconds wait){
@@ -82,7 +82,7 @@ void fun2(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wai
     std::cout << "F1 send EOS" << std::endl;
 }
 
-void draom(myqueue<int> &in_q, std::chrono::milliseconds wait){
+void drain(myqueue<int> &in_q, std::chrono::milliseconds wait){
     int work = in_q.pop();
     while(work != EOS){
         std::this_thread::sleep_for(wait);
