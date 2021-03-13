@@ -67,6 +67,7 @@ void fun1(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wai
         std::this_thread::sleep_for(wait);
         work = work + 1;
         out_q.push(work);
+        work = in_q.pop();
     }
 
     out_q.push(EOS);
@@ -80,6 +81,7 @@ void fun2(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wai
         std::this_thread::sleep_for(wait);
         work = work * 2;
         out_q.push(work);
+        work = in_q.pop();
     }
 
     out_q.push(EOS);
@@ -92,6 +94,7 @@ void drain(myqueue<int> &in_q, std::chrono::milliseconds wait){
         std::cout << "Drain receive " << work << std::endl;
         std::this_thread::sleep_for(wait);
         work = work * 2;
+        work = in_q.pop();
     }
 
     std::cout << "Drain send EOS" << std::endl;
