@@ -19,7 +19,7 @@ int main(int argc, char **argv){
     }
     int farm_workers = std::stoi(argv[1]);
     int works = std::stoi(argv[2]);
-    std::cout << "Using" << farm_workers*2+2 << "threada for " << works << " works" << std::endl;
+    std::cout << "Using " << farm_workers*2+2 << " threada for " << works << " works" << std::endl;
     
 
     {
@@ -63,6 +63,7 @@ void source(myqueue<int> &q, int n_works, std::chrono::milliseconds wait){
 void fun1(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wait){
     int work = in_q.pop();
     while(work != EOS){
+        std::cout << "F1 receive " << work << std::endl;
         std::this_thread::sleep_for(wait);
         work = work + 1;
         out_q.push(work);
@@ -75,6 +76,7 @@ void fun1(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wai
 void fun2(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wait){
     int work = in_q.pop();
     while(work != EOS){
+        std::cout << "F2 receive " << work << std::endl;
         std::this_thread::sleep_for(wait);
         work = work * 2;
         out_q.push(work);
@@ -87,9 +89,10 @@ void fun2(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wai
 void drain(myqueue<int> &in_q, std::chrono::milliseconds wait){
     int work = in_q.pop();
     while(work != EOS){
+        std::cout << "Drain receive " << work << std::endl;
         std::this_thread::sleep_for(wait);
         work = work * 2;
     }
 
-    std::cout << "F2 send EOS" << std::endl;
+    std::cout << "Drain send EOS" << std::endl;
 }
