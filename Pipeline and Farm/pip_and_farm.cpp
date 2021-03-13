@@ -13,14 +13,14 @@ void fun2(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wai
 void drain(myqueue<int> &in_q, std::chrono::milliseconds wait);
 
 int main(int argc, char **argv){
-    if(argc<2){
+    if(argc<3){
         std::cout << "Invlid arguments";
         return 0;
     }
-    std::cout << std::stoi(argv[1]) << std::stoi(argv[2]) << std::endl;
-    int farm_workers = *argv[0];
-    int works = *argv[1];
-    std::cout << "Using" << farm_workers*2+2 << "threada" << std::endl;
+    int farm_workers = std::stoi(argv[1]);
+    int works = std::stoi(argv[2]);
+    std::cout << "Using" << farm_workers*2+2 << "threada for " << works << " works" << std::endl;
+    
 
     {
         utimer t("Pipeline and farm");
