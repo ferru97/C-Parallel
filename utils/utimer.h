@@ -22,14 +22,15 @@ public:
   }
 
   ~utimer() {
-    stop =
-      std::chrono::system_clock::now();
-    std::chrono::duration<double> elapsed =
-      stop - start;
-    auto musec =
-      std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+    stop =std::chrono::system_clock::now();
+    std::chrono::duration<double> elapsed = stop - start;
     
-    std::cout << message << " computed in " << musec << " usec " << std::endl;
+    auto musec = std::chrono::duration_cast<std::chrono::microseconds>(elapsed).count();
+    auto millis = std::chrono::duration_cast<std::chrono::milliseconds>(elapsed).count();
+
+
+    //std::cout << message << " computed in " << musec << " usec " << std::endl;
+    std::cout << message << " computed in " << millis << " millis " << std::endl;
     if(us_elapsed != NULL)
       (*us_elapsed) = musec;
   }

@@ -1,0 +1,6 @@
+g++ -03 file.cpp -o out -pthread
+
+sudo openconnect --protocol=pulse cpn.unipi.it
+ssh v.ferrulli2@C6320p-2.itc.unipi.it
+htop
+rsync -avzur Folder v.ferrulli2@C6320p-2.itc.unipi.it
