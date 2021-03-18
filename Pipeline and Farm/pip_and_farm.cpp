@@ -13,13 +13,17 @@ void fun2(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wai
 void drain(myqueue<int> &in_q, std::chrono::milliseconds wait);
 
 int main(int argc, char **argv){
+    std::cout << "In this example whe have 4 stages, each stage takes a thread " << std::endl;
+    std::cout << std::endl << "Stage1(10ms) -> Stage2(30) -> Stage3(50ms) -> stage4(10ms) " << std::endl;
+    std::cout << std::endl << "The farm parallelize stages 2 and 3 " << std::endl;
+
     if(argc<3){
         std::cout << "Invlid arguments";
         return 0;
     }
     int farm_workers = std::stoi(argv[1]);
     int works = std::stoi(argv[2]);
-    std::cout << "Using " << farm_workers*2+2 << " threada for " << works << " works" << std::endl;
+    std::cout << std::endl <<  "Using " << farm_workers*2+2 << " threada for " << works << " works" << std::endl;
     
 
     {
@@ -37,7 +41,7 @@ int main(int argc, char **argv){
         for(int i=0; i<farm_workers; i=i+2){
             myqueue<int> tamp_queue(1, EOS);
             threads.emplace_back( std::thread {fun1, std::ref(emitter_out), std::ref(tamp_queue), 30ms});
-            threads.emplace_back( std::thread {fun2, std::ref(tamp_queue), std::ref(drain_inq), 30ms});
+            threads.emplace_back( std::thread {fun2, std::ref(tamp_queue), std::ref(drain_inq), 50ms});
         }
 
         source_t.join();
@@ -53,7 +57,7 @@ void source(myqueue<int> &q, int n_works, std::chrono::milliseconds wait){
     for(int i=0; i<n_works; i++){
         std::this_thread::sleep_for(wait);
         q.push(i);
-        std::cout << "Source emit " << i << std::endl; 
+        //std::cout << "Source emit " << i << std::endl; 
     }
 
     q.push(EOS);
@@ -63,7 +67,6 @@ void source(myqueue<int> &q, int n_works, std::chrono::milliseconds wait){
 void fun1(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wait){
     int work = in_q.pop();
     while(work != EOS){
-        std::cout << "F1 receive " << work << std::endl;
         std::this_thread::sleep_for(wait);
         work = work + 1;
         out_q.push(work);
@@ -77,7 +80,6 @@ void fun1(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wai
 void fun2(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wait){
     int work = in_q.pop();
     while(work != EOS){
-        std::cout << "F2 receive " << work << std::endl;
         std::this_thread::sleep_for(wait);
         work = work * 2;
         out_q.push(work);
@@ -91,7 +93,7 @@ void fun2(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wai
 void drain(myqueue<int> &in_q, std::chrono::milliseconds wait){
     int work = in_q.pop();
     while(work != EOS){
-        std::cout << "Drain receive " << work << std::endl;
+        //std::cout << "Drain receive " << work << std::endl;
         std::this_thread::sleep_for(wait);
         work = work * 2;
         work = in_q.pop();
