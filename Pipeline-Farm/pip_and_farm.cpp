@@ -1,6 +1,8 @@
 #include <chrono>
 #include <thread>
 #include <sstream>
+#include <iostream>
+#include <list>
 #include "../utils/utimer.h"
 #include "../utils/dqueue_multi.h"
 
@@ -14,40 +16,39 @@ void drain(myqueue<int> &in_q, std::chrono::milliseconds wait);
 
 int main(int argc, char **argv){
     std::cout << "In this example whe have 4 stages, each stage takes a thread " << std::endl;
-    std::cout << std::endl << "Stage1(10ms) -> Stage2(30) -> Stage3(50ms) -> stage4(10ms) " << std::endl;
-    std::cout << std::endl << "The farm parallelize stages 2 and 3 " << std::endl;
+    std::cout << std::endl << "Stage1(10ms) -> Stage2(30) -> Stage3(50ms) -> stage4(10ms), the farm parallelize stages 2 and 3 " << std::endl;
 
     if(argc<3){
-        std::cout << "Invlid arguments";
+        std::cout << "Invlid arguments: ./out farm_instances num_works";
         return 0;
     }
     int farm_workers = std::stoi(argv[1]);
     int works = std::stoi(argv[2]);
-    std::cout << std::endl <<  "Using " << farm_workers*2+2 << " threada for " << works << " works" << std::endl;
+    std::cout << std::endl <<  "Using " << farm_workers*2+2 << " threadas for " << works << " works" << std::endl;
     
 
     {
         utimer t("Pipeline and farm");
 
-        myqueue<int> emitter_out(farm_workers, EOS);
-        myqueue<int> drain_inq(1, EOS);
+        myqueue<int> emitter_out(1, farm_workers, EOS);
+        myqueue<int> drain_inq(farm_workers, 1, EOS);
 
-        std::vector<std::thread> threads;
-        threads.reserve(farm_workers*2);
-
+        std::list<std::thread> threads;
 
         std::thread source_t(source, std::ref(emitter_out), works, 10ms);
         std::thread drain_t(drain, std::ref(drain_inq), 10ms);
-        for(int i=0; i<farm_workers; i=i+2){
-            myqueue<int> tamp_queue(1, EOS);
-            threads.emplace_back( std::thread {fun1, std::ref(emitter_out), std::ref(tamp_queue), 30ms});
-            threads.emplace_back( std::thread {fun2, std::ref(tamp_queue), std::ref(drain_inq), 50ms});
+        for(int i=0; i<farm_workers; i=i+1){
+            myqueue<int> tamp_queue(1,1, EOS);
+            threads.push_back( std::thread {fun1, std::ref(emitter_out), std::ref(tamp_queue), 30ms});
+            threads.push_back( std::thread {fun2, std::ref(tamp_queue), std::ref(drain_inq), 50ms});
         }
 
+        std::list<std::thread>::iterator it;
         source_t.join();
-        drain_t.join();
-        for(std::vector<std::thread>::iterator it = threads.begin(); it != threads.end(); ++it) 
+        for (it = threads.begin(); it != threads.end(); ++it)
             it->join();
+        drain_t.join();
+
     }
     
     return 0;
@@ -87,7 +88,7 @@ void fun2(myqueue<int> &in_q, myqueue<int> &out_q, std::chrono::milliseconds wai
     }
 
     out_q.push(EOS);
-    std::cout << "F1 send EOS" << std::endl;
+    std::cout << "F2 send EOS" << std::endl;
 }
 
 void drain(myqueue<int> &in_q, std::chrono::milliseconds wait){
@@ -99,5 +100,5 @@ void drain(myqueue<int> &in_q, std::chrono::milliseconds wait){
         work = in_q.pop();
     }
 
-    std::cout << "Drain send EOS" << std::endl;
+    std::cout << "Drain END" << std::endl;
 }
