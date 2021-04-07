@@ -17,7 +17,7 @@ class MDFI_S2: public MDFI{
     
         void halfEven(){ 
             usleep(200);
-            for(int i=0; i < vect->size(); i++){
+            for(int i=vect->size()-1; i >= 0; i--){
                 if((*vect)[i]%2==0)
                     (*vect)[i] = (*vect)[i] / 2;
             }

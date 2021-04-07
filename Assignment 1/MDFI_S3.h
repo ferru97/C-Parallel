@@ -15,9 +15,9 @@ class MDFI_S3: public MDFI{
     
         void printVector(){ 
             usleep(300);
-            std::cout << "\nOutput" << std::endl;
+            //std::cout << "\nOutput" << std::endl;
             for(int i=0; i < vect->size(); i++){
-                std::cout<< (*vect)[i] << std::flush;
+                //std::cout<< (*vect)[i] << std::flush;
             }
         }
 
