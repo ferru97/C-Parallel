@@ -1,36 +1,32 @@
 #include "Pool.h"
-#include "MDFI_S3.h"
 #include <iostream>
 #include <vector>
 #include <mutex>
 #include <stack>
 #include <unistd.h>
 
-#ifndef MDFI_S2_H
-#define MDFI_S2_H
+#ifndef MDFI_S3_H
+#define MDFI_S3_H
 
-class MDFI_S2: public MDFI{
+class MDFI_S3: public MDFI{
     private:
         std::mutex mutex;
         std::vector<int> *vect;
-        MDFI_S3 *son;
     
-        void halfEven(){ 
-            usleep(200);
+        void printVector(){ 
+            usleep(300);
+            std::cout << "\nOutput" << std::endl;
             for(int i=0; i < vect->size(); i++){
-                if((*vect)[i]%2==0)
-                    (*vect)[i] = (*vect)[i] / 2;
+                std::cout<< (*vect)[i] << std::flush;
             }
-            son->setVector(vect);
         }
 
     public:
-        MDFI_S2(MDFI_S3 *_s, int _id, Pool *_pool) {
+        MDFI_S3(Pool *_pool, int _id) {
             this->last_worker_id = -1;
-            input_number = 1;
             id = _id;
             pool = _pool;
-            son = _s;
+            input_number = 1;
         }
 
         void setVector(std::vector<int> *v){
@@ -43,7 +39,7 @@ class MDFI_S2: public MDFI{
         }
 
         void execFunction() override{
-            halfEven();
+            printVector();
         }
 };
 
